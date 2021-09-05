@@ -24,6 +24,7 @@ namespace MFCFriendlyDriverGenerator {
         [TestCase("")]
         [TestCase("STYLE DS_SETFONT | DS_MODALFRAME")]
         [TestCase("CAPTION \"this is caption\"")]
+        [TestCase("FONT 9, \"Segoe UI\"")]
         [TestCase("FONT 9, \"Segoe UI\", 400, 0, 0x1")]
         [TestCase("STYLE DS_SETFONT | DS_MODALFRAME\r\n" +
                   "CAPTION \"this is caption\"\r\n" +

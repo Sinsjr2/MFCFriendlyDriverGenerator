@@ -51,9 +51,7 @@ namespace MFCFriendlyDriverGenerator {
                 from __1 in Parse.String("FONT").Elem()
                 from pointSize in ExpParser.Exp
                 from typeface in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
-                from weight in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
-                from italic in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
-                from charset in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
+                from weight_italic_charset in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp).Repeat(0, 3)
                 select ""
             ).Or(
                 from _1 in Parse.String("CLASS").Elem()
