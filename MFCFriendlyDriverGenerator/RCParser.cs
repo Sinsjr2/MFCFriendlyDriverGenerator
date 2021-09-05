@@ -173,8 +173,7 @@ namespace MFCFriendlyDriverGenerator {
         static readonly Parser<IResource> VERSIONINFO =
             // from id in ExpParser.Exp
             from id in ExpParser.Identifier
-            let integers = ExpParser.Exp
-            .Then(_ => CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp).Repeat(3))
+            let integers = ExpParser.Exp.DelimitedBy(CommonSyntax.CommaSeparator)
             .Select(_ => default(IExp))
             from _1 in Parse.String("VERSIONINFO").Elem()
             from _2 in Parse.String("FILEVERSION").Elem().Then(_ => integers)

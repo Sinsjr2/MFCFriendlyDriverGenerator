@@ -248,6 +248,29 @@ namespace MFCFriendlyDriverGenerator {
                   "        VALUE \"Translation\", 0x411, 932\r\n" +
                   "    END\r\n" +
                   "END\r\n")]
+            [TestCase("VS_VERSION_INFO",
+                  "FILEVERSION FILEVER\r\n" +
+                  "PRODUCTVERSION PRODUCTVER\r\n" +
+                  "FILEFLAGSMASK VS_FFI_FILEFLAGSMASK\r\n" +
+                  "FILEFLAGS FLAGSr\n" +
+                  "FILEOS VOS_NT_WINDOWS32\r\n" +
+                  "FILETYPE VFT_APP\r\n" +
+                  "FILESUBTYPE VFT2_UNKNOWN\r\n" +
+                  "BEGIN\r\n" +
+                  "    BLOCK \"StringFileInfo\"\r\n" +
+                  "    BEGIN\r\n" +
+                  "        BLOCK \"041103a4\"\r\n" +
+                  "        BEGIN\r\n" +
+                  "            VALUE \"FileVersion\", \"8.0.4.0\"\r\n" +
+                  "            VALUE \"comments\", \"this is comment\"\r\n" +
+                  "        END\r\n" +
+                  "    END\r\n" +
+                  "    BLOCK \"VarFileInfo\"\r\n" +
+                  "    BEGIN\r\n" +
+                  "        VALUE \"Translation\", 0x411, 932\r\n" +
+                  "    END\r\n" +
+                  "END\r\n")]
+
             [TestCase("VS_2",
                   "FILESUBTYPE 0\r\n" +
                   "FILETYPE 1\r\n" +
