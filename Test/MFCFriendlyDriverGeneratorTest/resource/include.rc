@@ -1,0 +1,3 @@
+#include "contain_comment.rc"
+including contain_comment file
+#include "empty.rc"

@@ -1,0 +1,7 @@
+// comment
+// comment2
+// #define comment
+#if defined(comment)
+// error
+#endif
+end

@@ -1,0 +1,2 @@
+including DialogTest.rc
+#include "../DialogTest.rc"
