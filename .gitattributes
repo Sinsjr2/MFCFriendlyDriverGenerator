@@ -1,6 +1,7 @@
 *               text=auto
 *.csproj        text encoding= eol=lf
 *.cs            text eol=lf diff=charp
+*.tt            text eol=lf
 *.rc            text eol=crlf
 *.h             text eol=crlf diff=cpp
 *.cpp           text eol=crlf diff=cpp
