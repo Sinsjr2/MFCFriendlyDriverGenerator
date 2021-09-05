@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+	  <Nullable>enable</Nullable>
+	  <LangVersion>9.0</LangVersion>
+	  <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <AdditionalFiles Include="setting\*.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Codeer.Friendly" Version="2.6.1" />
+    <PackageReference Include="Codeer.Friendly.Windows" Version="2.15.0" />
+    <PackageReference Include="Codeer.Friendly.Windows.Grasp" Version="2.14.0" />
+    <PackageReference Include="Codeer.Friendly.Windows.NativeStandardControls" Version="2.16.6" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="NUnit" Version="3.13.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
+    <PackageReference Include="coverlet.collector" Version="3.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\MFCFriendlyDriverGenerator\MFCFriendlyDriverGenerator.csproj" rivateAssets="all" ReferenceOutputAssembly="false" OutputItemType="Analyzer" />
+  </ItemGroup>
+
+</Project>
