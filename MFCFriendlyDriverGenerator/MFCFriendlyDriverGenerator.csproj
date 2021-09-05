@@ -7,14 +7,15 @@
     <LangVersion>9.0</LangVersion>
 
     <!-- does not need runtime self -->
-	<IncludeBuildOutput>false</IncludeBuildOutput>
-	  <IncludeSymbols>false</IncludeSymbols>
-	  <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
-	  <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
-	  <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
-	  <DevelopmentDependency>true</DevelopmentDependency>
-	  <Version>1.0.0</Version>
-	  <Authors>Sinsjr2</Authors>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackBuildOutputs</TargetsForTfmSpecificContentInPackage>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <Version>0.8.22</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Sinsjr2</Authors>
   </PropertyGroup>
 
 	<ItemGroup>
@@ -55,10 +56,12 @@
 	</Target>
 
 	<Target Name="PackBuildOutputs" DependsOnTargets="SatelliteDllsProjectOutputGroup;DebugSymbolsProjectOutputGroup">
-		<ItemGroup>
-			<TfmSpecificPackageFile Include="$(TargetDir)\*.dll" PackagePath="analyzers\dotnet\cs" />
-			<TfmSpecificPackageFile Include="$(PkgNewtonsoft_Json)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs" />
-			<TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="analyzers\dotnet\cs\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
-		</ItemGroup>
+	  <ItemGroup>
+	    <TfmSpecificPackageFile Include="$(PkgSprache)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
+	    <TfmSpecificPackageFile Include="$(PkgReadJEnc)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
+	    <TfmSpecificPackageFile Include="$(PkgSystem_CodeDom)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
+	    <TfmSpecificPackageFile Include="$(TargetDir)\*.dll" PackagePath="analyzers\dotnet\cs\" />
+	    <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="analyzers\dotnet\cs\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
+	  </ItemGroup>
 	</Target>
 </Project>
