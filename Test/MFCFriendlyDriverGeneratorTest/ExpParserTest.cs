@@ -17,6 +17,7 @@ namespace MFCFriendlyDriverGenerator {
                 new("\"", "\"\\\"\""),
                 new("abzAZ_あ09漢字\" ", "\"abzAZ_あ09漢字\\\" \""),
                 new("__a_\"___\"_z__", "  \"__a_\\\"___\\\"_z__\"  "),
+                new("  NativeControls について   ", "\"  NativeControls について   \""),
             };
         }
 

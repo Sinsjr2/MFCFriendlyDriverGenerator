@@ -22,10 +22,10 @@ namespace MFCFriendlyDriverGenerator {
     public record IntegerLiteral(int Value) : IExp;
 
     public static class ExpParser {
-        public static readonly Parser<string> StringLiteralBody =
+        static readonly Parser<string> StringLiteralBody =
             Parse.Regex("(\\\\.|[^\"])*").Select(Regex.Unescape);
         public static readonly Parser<string> StringLiteral =
-            Pair(Parse.Char('"').Elem(), Parse.Char('"').Elem(),
+            Pair(Parse.WhiteSpace.XMany().Then(_ => Parse.Char('"')), Parse.Char('"').Then(_ => Parse.WhiteSpace.XMany()),
                  StringLiteralBody)
             .Elem();
         public static readonly Parser<string> IdentifirNoSpace = Parse.Regex("[a-zA-Z_][a-zA-Z_0-9]*", "identifier");
