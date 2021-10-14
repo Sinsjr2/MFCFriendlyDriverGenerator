@@ -16,26 +16,26 @@ namespace MFCFriendlyDriverGenerator {
     /// </summary>
     public class MFCFriendlyDriverTable {
 
-        readonly IReadOnlyDictionary<ControlKind, string> ControlKindToDriverType = new Dictionary<ControlKind, string>() {
-            {ControlKind.AUTO3STATE,      "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.AUTORADIOBUTTON, "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.CHECKBOX,        "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.CTEXT,           "Codeer.Friendly.Windows.Grasp.WindowControl"},
-            {ControlKind.DEFPUSHBUTTON,   "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.EDITTEXT,        "Codeer.Friendly.Windows.NativeStandardControls.NativeEdit"},
+        readonly IReadOnlyDictionary<ControlKind, (string type, bool usesConstructor)> ControlKindToDriverType = new Dictionary<ControlKind, (string, bool)>() {
+            {ControlKind.AUTO3STATE,      ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.AUTORADIOBUTTON, ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.CHECKBOX,        ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.CTEXT,           ("Codeer.Friendly.Windows.Grasp.WindowControl", false)},
+            {ControlKind.DEFPUSHBUTTON,   ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.EDITTEXT,        ("Codeer.Friendly.Windows.NativeStandardControls.NativeEdit", true)},
             // 未割り当て
             // {ControlKind.GROUPBOX,        "Codeer.Friendly.Windows.NativeStandardControls."},
             // {ControlKind.ICON,            "Codeer.Friendly.Windows.NativeStandardControls."},
-            {ControlKind.LISTBOX,         "Codeer.Friendly.Windows.NativeStandardControls.NativeListBox"},
-            {ControlKind.LTEXT,           "Codeer.Friendly.Windows.Grasp.WindowControl"},
-            {ControlKind.PUSHBOX,         "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.PUSHBUTTON,      "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.RADIOBUTTON,     "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.RTEXT,           "Codeer.Friendly.Windows.Grasp.WindowControl"},
-            {ControlKind.SCROLLBAR,       "Codeer.Friendly.Windows.NativeStandardControls.NativeScrollBar"},
-            {ControlKind.STATE3,          "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.AUTOCHECKBOX,    "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {ControlKind.COMBOBOX,        "Codeer.Friendly.Windows.NativeStandardControls.NativeComboBox"},
+            {ControlKind.LISTBOX,         ("Codeer.Friendly.Windows.NativeStandardControls.NativeListBox", true)},
+            {ControlKind.LTEXT,           ("Codeer.Friendly.Windows.Grasp.WindowControl", false)},
+            {ControlKind.PUSHBOX,         ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.PUSHBUTTON,      ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.RADIOBUTTON,     ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.RTEXT,           ("Codeer.Friendly.Windows.Grasp.WindowControl", false)},
+            {ControlKind.SCROLLBAR,       ("Codeer.Friendly.Windows.NativeStandardControls.NativeScrollBar", true)},
+            {ControlKind.STATE3,          ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.AUTOCHECKBOX,    ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton", true)},
+            {ControlKind.COMBOBOX,        ("Codeer.Friendly.Windows.NativeStandardControls.NativeComboBox", true)},
         };
 
         readonly IReadOnlyDictionary<string, string> ControlNameToDriverType = new Dictionary<string, string>() {
@@ -55,6 +55,7 @@ namespace MFCFriendlyDriverGenerator {
         };
 
         public IEnumerable<Dialog> ToDialogs(IEnumerable<DIALOG> dialogs, IReadOnlyDictionary<string, int> resourceNameToDialogID) {
+            (string type, bool usesConstructor)? nullValue = null;
             return
                 from dlg in dialogs
                 select new Dialog(dlg.ID,
@@ -62,12 +63,13 @@ namespace MFCFriendlyDriverGenerator {
                                    let maybeResID = resourceNameToDialogID.TryGetValue(control.ID, out var id) ? id : default(int?)
                                    where maybeResID.HasValue
                                    let maybeDriverType = control switch {
-                                      Control ctrl => ControlNameToDriverType.TryGetValue(ctrl.ControlName, out var ctrlType) ? ctrlType : null,
+                                      Control ctrl => ControlNameToDriverType.TryGetValue(ctrl.ControlName, out var ctrlType) ? (ctrlType, true) : null,
                                       ControlID ctrlID => ControlKindToDriverType.TryGetValue(ctrlID.Kind, out var ctrlType) ? ctrlType : null,
-                                      _ => null
+                                      _ => nullValue
                                    }
-                                   where maybeResID is not null
-                                   select new ControlInfo(maybeResID.Value, control.ID, maybeDriverType))
+                                   where maybeDriverType is not null
+                                   let driverType = maybeDriverType.Value
+                                   select new ControlInfo(maybeResID.Value, control.ID, driverType.type, driverType.usesConstructor))
                                   .ToEqList());
         }
     }

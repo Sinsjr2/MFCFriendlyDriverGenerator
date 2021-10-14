@@ -26,7 +26,7 @@ namespace <#= Context.NameSpace #> {
         public WindowControl Dialog { get; }
 
 <#      foreach (var control in dialog.Controls) { #>
-        public <#= control.DriverType #> <#= control.ControlName #> => new <#= control.DriverType #>(Dialog.IdentifyFromDialogId(<#= dialog.DialogName #>Keys.<#= control.ControlName #>));
+        public <#= control.DriverType #> <#= control.ControlName #> => <#= control.CreateDriverInstanceCode("Dialog.IdentifyFromDialogId(" + dialog.DialogName + "Keys." + control.ControlName + ")") #>;
 <#      } #>
 
         public <#= dialog.DialogName #>Driver(WindowControl dialog) {
