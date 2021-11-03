@@ -12,6 +12,7 @@ using System.Text;
 using Hnx8.ReadJEnc;
 using System.Threading;
 using System;
+using System.Reflection;
 
 namespace MFCFriendlyDriverGenerator {
 
@@ -36,7 +37,7 @@ namespace MFCFriendlyDriverGenerator {
         /// <summary>
         ///  ツールの名前とバージョン
         /// </summary>
-        readonly GeneratedCodeAttribute toolInfo = new("MFCFriendlyDriverGenerator", "0.8.22");
+        readonly GeneratedCodeAttribute toolInfo;
 
 #pragma warning disable RS2008
         /// <summary>
@@ -77,12 +78,13 @@ namespace MFCFriendlyDriverGenerator {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
         }
 
-        public MFCFriendlyDriverGenerator() {
-            preCompile = new CLPreprocess();
+        public MFCFriendlyDriverGenerator() : this(null) {
         }
 
-        public MFCFriendlyDriverGenerator(IRcFilePreCompile preCompile) {
-            this.preCompile = preCompile;
+        public MFCFriendlyDriverGenerator(IRcFilePreCompile? preCompile) {
+            this.preCompile = preCompile ?? new CLPreprocess();
+            var assembly = Assembly.GetExecutingAssembly().GetName();
+            toolInfo = new(assembly.Name, assembly.Version.ToString());
         }
 
         /// <summary>
