@@ -226,9 +226,20 @@ namespace MFCFriendlyDriverGenerator {
                     .Where(@group => @group.Distinct().Count() <= 1)
                     .SelectMany(xs => xs)
                     .ToDictionary(x => x.Key, x => x.Value);
+                IEnumerable<IResource> parsed;
+                try {
+                    parsed = ResourceParser.Resources.End()
+                        .Parse(PreCompiledString);
+                }
+                catch (ParseException ex) {
+                    // わかりやすいように失敗したrcファイルの内容を書き出す。
+                    var dumpPath = Path.Combine(Path.GetDirectoryName(xmlFile.Path), Path.GetFileNameWithoutExtension(xmlFile.Path) + ".rc");
+                    context.ReportDiagnostic(Diagnostic.Create(InvalidRCFileFormat, Location.None, dumpPath, ex.ToString()));
+                    FileUtil.WriteAllText(dumpPath, PreCompiledString, context.CancellationToken);
+                    return;
+                }
                 var dialogs = table.ToDialogs(
-                    ResourceParser.Resources.End()
-                    .Parse(PreCompiledString)
+                    parsed
                     .OfType<DIALOG>(),
                     definedValues)
                     .ToEqList();
