@@ -171,12 +171,27 @@ namespace MFCFriendlyDriverGenerator {
             // 設定ファイルは1以下でないといけない
             var xmlFiles = context.AdditionalFiles.Where(at => Path.GetFileName(at.Path) == settingFileName).ToList();
             if (1 < xmlFiles.Count) {
-                Console.Error.WriteLine("too many setting files: " + string.Join("\n", xmlFiles) + "\n" +
-                                    "expected 0 or 1.");
+                context.ReportDiagnostic(Diagnostic.Create(ToManySettingFile, Location.None, string.Join("\n", xmlFiles)));
                 return;
             }
             foreach (var xmlFile in xmlFiles) {
-                ProcessSettingFile(xmlFile, context);
+                try {
+                    ProcessSettingFile(xmlFile, context);
+                }
+                // 中断した例外を出力しても邪魔なのでフィルタリングする
+                catch (OperationCanceledException) {}
+                catch (AggregateException ae) {
+                    var exs = ae.InnerExceptions
+                        .Where(e => e is not OperationCanceledException)
+                        .ToArray();
+                    if (exs.Any()) {
+                        var message = string.Join("\n", exs.AsEnumerable());
+                        Diagnostic.Create(ExceptionMessage, Location.None, message);
+                    }
+                }
+                catch (Exception ex) {
+                    Diagnostic.Create(ExceptionMessage, Location.None, ex.ToString());
+                }
             }
         }
 
