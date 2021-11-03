@@ -60,7 +60,6 @@
 	    <TfmSpecificPackageFile Include="$(PkgSprache)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
 	    <TfmSpecificPackageFile Include="$(PkgReadJEnc)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
 	    <TfmSpecificPackageFile Include="$(PkgSystem_CodeDom)\lib\netstandard2.0\*.dll" PackagePath="analyzers\dotnet\cs\" />
-	    <TfmSpecificPackageFile Include="$(TargetDir)\*.dll" PackagePath="analyzers\dotnet\cs\" />
 	    <TfmSpecificPackageFile Include="@(SatelliteDllsProjectOutputGroupOutput->'%(FinalOutputPath)')" PackagePath="analyzers\dotnet\cs\%(SatelliteDllsProjectOutputGroupOutput.Culture)\" />
 	  </ItemGroup>
 	</Target>
