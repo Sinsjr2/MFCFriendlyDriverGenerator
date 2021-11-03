@@ -37,6 +37,38 @@ namespace MFCFriendlyDriverGenerator {
         /// </summary>
         readonly GeneratedCodeAttribute toolInfo = new("MFCFriendlyDriverGenerator", "0.8.22");
 
+#pragma warning disable RS2008
+        /// <summary>
+        ///  例外が発生した時のメッセージ
+        /// </summary>
+        static readonly DiagnosticDescriptor ExceptionMessage = new(id: "FDG0000",
+                                                                    title: "Exception occurred",
+                                                                    messageFormat: "{0}",
+                                                                    category: nameof(MFCFriendlyDriverGenerator),
+                                                                    DiagnosticSeverity.Error,
+                                                                    isEnabledByDefault: true);
+
+        /// <summary>
+        ///  RCファイルのパースに失敗した時のダンプメッセージ
+        /// </summary>
+        static readonly DiagnosticDescriptor InvalidRCFileFormat = new(id: "FDG0001",
+                                                                       title: "Couldn't parse RC file",
+                                                                       messageFormat: "dumped to '{0}' message {1}",
+                                                                       category: nameof(MFCFriendlyDriverGenerator),
+                                                                       DiagnosticSeverity.Error,
+                                                                       isEnabledByDefault: true);
+
+        /// <summary>
+        ///  設定ファイルが多すぎる
+        /// </summary>
+        static readonly DiagnosticDescriptor ToManySettingFile = new(id: "FDG0002",
+                                                                     title: "Setting file many, expected 0 or 1",
+                                                                     messageFormat: "settingfiles: {0}",
+                                                                     category: nameof(MFCFriendlyDriverGenerator),
+                                                                     DiagnosticSeverity.Error,
+                                                                     isEnabledByDefault: true);
+#pragma warning restore RS2008
+
         readonly IRcFilePreCompile preCompile;
 
         static MFCFriendlyDriverGenerator() {
