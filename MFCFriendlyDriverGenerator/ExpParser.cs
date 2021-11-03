@@ -31,7 +31,7 @@ namespace MFCFriendlyDriverGenerator {
         public static readonly Parser<string> IdentifirNoSpace = Parse.Regex("[a-zA-Z_][a-zA-Z_0-9]*", "identifier");
         public static readonly Parser<string> Identifier = IdentifirNoSpace.Elem();
 
-        static readonly Parser<int> HexLiteral =
+        public static readonly Parser<int> HexLiteral =
             Parse.Regex("0x[0-9A-Fa-f]+").Elem()
             .Select(hex => int.Parse(hex.Substring(2), NumberStyles.HexNumber));
 

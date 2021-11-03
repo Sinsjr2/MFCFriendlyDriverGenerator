@@ -290,6 +290,33 @@ namespace MFCFriendlyDriverGenerator {
         }
 
         [Test]
+        [TestCase("IDD_COMBOBOXTEST",
+                  "IDC_COMBOBOX01, 0x403, 4, 0 0x6e4f, 0x0065,\r\n" +
+                  "IDC_COMBOBOX01, 0x403, 4, 0 0x7754, 0x006f,\r\n" +
+                  "IDC_COMBOBOX05, 0x403, 6, 0 0x0101, 0x0161,0x077f,\r\n" +
+                  "0")]
+        [TestCase("IDC_DLG_DISPLAY",
+                  "IDC_CMB1, 0x403, 1, 0\r\n" +
+                  "\"\\000\"\r\n" +
+                  "IDC_CMB2, 0x403, 1, 0\r\n" +
+                  "\"\\000\"\r\n" +
+                  "0")]
+         [TestCase("IDC_INT_AND_STRING",
+                  "IDC_CMB1, 0x403, 5, 0 0xc08e,0xfc90,\"\\000\"\r\n" +
+                  "0")]
+
+        [TestCase("IDC_EMPTY", "")]
+        public void DLGINITTest(string id, string body) {
+            var code =
+                id + " DLGINIT\r\n" +
+                "BEGIN\r\n" +
+                body + "\r\n" +
+                "END";
+            //ドライバの生成には必要ないので、エラー無くパースできれば良い
+            ResourceParser.Resources.End().Parse(code);
+        }
+
+        [Test]
         [TestCase("IDD_HOGE", "0x0000", 0)]
         [TestCase("IDD_AZ", "0", 0)]
         [TestCase("IDD_1234", "0x000F", 0xF)]

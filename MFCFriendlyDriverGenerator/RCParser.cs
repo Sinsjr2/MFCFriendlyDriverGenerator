@@ -28,6 +28,7 @@ namespace MFCFriendlyDriverGenerator {
     public record Language(IExp Lang, IExp SubLang) : IResource;
 
     public record Menu(string ID, EqList<IMenuItem> Items) : IResource;
+    public record DlgInit(string ID) : IResource;
     public interface IMenuItem { }
     public record Popup(string Text, EqList<IMenuItem> Items) : IMenuItem;
     public record MenuItem(IExp ID, string Text) : IMenuItem;
@@ -123,6 +124,29 @@ namespace MFCFriendlyDriverGenerator {
             from menuItems in POPUP.Or(MENUITEM).XMany().BeginEnd()
             select new Menu(id, menuItems.ToEqList());
 
+        static readonly Parser<IResource> DLGINIT =
+            from id in ExpParser.Identifier
+            from _1 in Parse.String("DLGINIT").Elem()
+            from _2 in (
+                from rows in (
+                    from innnerId in ExpParser.Identifier
+                    from ___1 in Parse.String(",").Elem()
+                    from ___2 in Parse.String("0x403").Elem()
+                    from ___3 in Parse.String(",").Elem()
+                    from strLength in ExpParser.IntLiteral
+                    from ___4 in Parse.String(",").Elem()
+                    from ___5 in Parse.String("0").Elem()
+                    from str  in ExpParser.HexLiteral.Return("").Or(
+                        ExpParser.StringLiteral).DelimitedBy(Parse.String(",").Elem())
+                    .Many()
+                    from ___6 in Parse.String(",").Elem().Optional()
+                    select "")
+                .Many()
+                from __1 in Parse.String("0").Elem()
+                select ""
+            ).XOptional().BeginEnd()
+            select new DlgInit(id);
+
         static readonly Parser<IResource> TOOLBAR =
             from toolbarID in ExpParser.Identifier
             from _1 in Parse.String("TOOLBAR").Elem().Then(_ => ExpParser.Exp)
@@ -198,6 +222,7 @@ namespace MFCFriendlyDriverGenerator {
         public static readonly Parser<IEnumerable<IResource>> Resources =
             DIALOGEX
             .Or(DIALOG)
+            .Or(DLGINIT)
             .Or(FileResource(FileResourceKind.BITMAP))
             .Or(FileResource(FileResourceKind.CURSOR))
             .Or(FileResource(FileResourceKind.FONT))
