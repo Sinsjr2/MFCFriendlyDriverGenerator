@@ -18,6 +18,8 @@ namespace MFCFriendlyDriverGenerator {
                 new("abzAZ_あ09漢字\" ", "\"abzAZ_あ09漢字\\\" \""),
                 new("__a_\"___\"_z__", "  \"__a_\\\"___\\\"_z__\"  "),
                 new("  NativeControls について   ", "\"  NativeControls について   \""),
+                new("aaa\" bb\" c", "  \"aaa\"\" bb\"\" c\"   "),
+                new("", "  \"\" "),
             };
         }
 
@@ -25,6 +27,11 @@ namespace MFCFriendlyDriverGenerator {
         [TestCaseSource(nameof(GetStringTestData))]
         public void StringLiteralTest(StringTestData data) {
             ExpParser.StringLiteral.End().Parse(data.Code).Is(data.Expected);
+        }
+
+        [Test]
+        public void NullStrTest() {
+            ExpStringLiteralTest(new("\u0000", "\"\\000\""));
         }
 
         [Test]

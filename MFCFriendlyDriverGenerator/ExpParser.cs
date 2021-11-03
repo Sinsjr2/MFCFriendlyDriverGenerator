@@ -23,7 +23,7 @@ namespace MFCFriendlyDriverGenerator {
 
     public static class ExpParser {
         static readonly Parser<string> StringLiteralBody =
-            Parse.Regex("(\\\\.|[^\"])*").Select(Regex.Unescape);
+            Parse.Regex("(\\\\.|\\\"\\\"|[^\"])*").Select(Regex.Unescape).Select(str => str.Replace("\"\"", "\""));
         public static readonly Parser<string> StringLiteral =
             Pair(Parse.WhiteSpace.XMany().Then(_ => Parse.Char('"')), Parse.Char('"').Then(_ => Parse.WhiteSpace.XMany()),
                  StringLiteralBody)
