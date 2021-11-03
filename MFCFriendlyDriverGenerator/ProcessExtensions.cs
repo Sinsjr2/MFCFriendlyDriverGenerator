@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MFCFriendlyDriverGenerator {
@@ -34,7 +35,7 @@ namespace MFCFriendlyDriverGenerator {
         ///  作業ディレクトリが指定されていない場合(nullもしくは空文字列)はカレントディレクトリを作業ディレクトリにします。
         ///  また、作業ディレクトリが存在しない場合は例外が発生します。
         /// </summary>
-        public static ProcessResult Run(this string command, string arguments, string? workingDir = null, Encoding? outputEncoding = null, Encoding? errorEncoding = null) {
+        public static ProcessResult Run(this string command, string arguments, string? workingDir = null, Encoding? outputEncoding = null, Encoding? errorEncoding = null, CancellationToken? token = null) {
             // 存在しないディレクトリでコマンドを実行した場合
             // 例外は発生するがメッセージがわかりにくいためチェックする
             var workingDirectory = string.IsNullOrEmpty(workingDir)
@@ -57,7 +58,9 @@ namespace MFCFriendlyDriverGenerator {
             );
 
             var outAndErrorTask = Task.WhenAll(process.StandardOutput.ReadToEndAsync(), process.StandardError.ReadToEndAsync());
-            process.WaitForExit();
+            if (token is not null) {
+                outAndErrorTask.Wait(token.Value);
+            }
             var outAndErrorStr = outAndErrorTask.Result;
 
             return process.ExitCode == 0

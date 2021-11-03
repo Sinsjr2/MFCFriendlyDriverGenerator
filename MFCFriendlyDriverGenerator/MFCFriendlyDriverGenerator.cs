@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Sprache;
 using Microsoft.CodeAnalysis;
-using System;
 using System.Xml.Serialization;
 using MFCFriendlyDriverGenerator.Setting;
 using System.Collections.Generic.Immutable;
 using System.CodeDom.Compiler;
 using System.Text;
 using Hnx8.ReadJEnc;
+using System.Threading;
+using System;
 
 namespace MFCFriendlyDriverGenerator {
 
@@ -87,8 +88,8 @@ namespace MFCFriendlyDriverGenerator {
         /// <summary>
         ///  プロジェクトディレクトリ以下でincludeしているファイルのパスを返します。
         /// </summary>
-        IEnumerable<string> GetRefFileInSubDir(PreprocessProcInfo info, string rcFilePath) {
-            var precompiled = preCompile.Preprocess(info, rcFilePath);
+        IEnumerable<string> GetRefFileInSubDir(PreprocessProcInfo info, string rcFilePath, CancellationToken token) {
+            var precompiled = preCompile.Preprocess(info, rcFilePath, token);
             return precompiled.RefFilePaths
                 .Select(path => {
                     return Path.GetFullPath(Regex.Replace(path, "/|\\\\", Path.DirectorySeparatorChar.ToString(), RegexOptions.Multiline));
@@ -96,8 +97,8 @@ namespace MFCFriendlyDriverGenerator {
                 .Where(path => PathExtensions.IsSubDirectory(info.ProjectDir, path));
         }
 
-        (EqList<string> FileTextInProject, string PreCompiledString) Precompile(PreprocessProcInfo info, string rcFilePath) {
-            var refFiles = GetRefFileInSubDir(info, rcFilePath)
+        (EqList<string> FileTextInProject, string PreCompiledString) Precompile(PreprocessProcInfo info, string rcFilePath, CancellationToken token) {
+            var refFiles = GetRefFileInSubDir(info, rcFilePath, token)
                 .Select(path => info.ProjectDir.EndWithDirSeparator().GetRelativePath(path))
                 .ToArray();
 
@@ -122,14 +123,14 @@ namespace MFCFriendlyDriverGenerator {
                 var outputFile = Path.Combine(tempDir.DirectoryPath, path);
                 Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
                 // 読みだしたエンコーディングと同じエンコーディングで書き戻す
-                File.WriteAllText(outputFile, code, charCode.GetEncoding());
+                FileUtil.WriteAllText(outputFile, code, token, charCode.GetEncoding());
                 loadedFiles.Add(text);
             }
 
             // コメントアウトしたコードを再度コンパイルし、コメントアウトを解除
             var rcString = string.Join(
                 "",
-                Regex.Matches(preCompile.Preprocess(info with { ProjectDir = tempDir.DirectoryPath }, rcFilePath).PrecompiledCode,
+                Regex.Matches(preCompile.Preprocess(info with { ProjectDir = tempDir.DirectoryPath }, rcFilePath, token).PrecompiledCode,
                               $"^{escapeStr}(.*(\n|\r|\r\n))", RegexOptions.Multiline)
                 .Cast<Match>()
                 .Select(match => match.Groups[1]));
@@ -143,9 +144,9 @@ namespace MFCFriendlyDriverGenerator {
         ///  指定したプロジェクトのサブディレクトリにあるファイルのみdefineを展開しません。
         ///  rcファイルのパスは作業ディレクトリからの相対パスで指定している必要があります。
         /// </summary>
-        public string PrecompiledString(PreprocessProcInfo info, string rcFilePath) {
+        public string PrecompiledString(PreprocessProcInfo info, string rcFilePath, CancellationToken token) {
 
-            return Precompile(info, rcFilePath).PreCompiledString;
+            return Precompile(info, rcFilePath, token).PreCompiledString;
         }
 
         /// <summary>
@@ -217,7 +218,7 @@ namespace MFCFriendlyDriverGenerator {
                 var info = new PreprocessProcInfo(projectDir,
                                                   mfcFriendly.Defines.Select(x => x.Value).ToEqList(),
                                                   mfcFriendly.IncludeFile.Select(x => x.IncludePath).ToEqList());
-                var (FileTextInProject, PreCompiledString) = Precompile(info, mfcFriendly.RcFilePath);
+                var (FileTextInProject, PreCompiledString) = Precompile(info, mfcFriendly.RcFilePath, context.CancellationToken);
                 // 本当はプロプロセッサの条件分岐をして有効なdefineと無効なdefineを識別するべきであるが、
                 // できていないので、
                 // 複数個定義されており値が異なる場合は、定義していないものとして扱う

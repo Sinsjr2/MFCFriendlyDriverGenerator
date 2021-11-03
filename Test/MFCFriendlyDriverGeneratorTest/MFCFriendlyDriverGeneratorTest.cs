@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Generic.Immutable;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using NUnit.Framework;
 using Sprache;
 
@@ -58,7 +59,8 @@ namespace MFCFriendlyDriverGenerator {
         }
 
         void FileLoadTest(string workingDir, IReadOnlyList<string> defines, IReadOnlyList<string> includePaths, string rcFilePath, PreprocessResult expected) {
-            var result = PreCompile.Preprocess(TestDataInfo, rcFilePath);
+            var cts = new CancellationTokenSource();
+            var result = PreCompile.Preprocess(TestDataInfo, rcFilePath, cts.Token);
             result.PrecompiledCode.Is(ToOSNewLine(expected.PrecompiledCode));
             result.RefFilePaths.Count.Is(expected.RefFilePaths.Count);
             foreach (var (a, b) in result.RefFilePaths.Zip(expected.RefFilePaths, (a, b) =>(a, b))) {
@@ -68,9 +70,10 @@ namespace MFCFriendlyDriverGenerator {
 
         [Test]
         public void 存在しないディレクトリを作業ディレクトリにすると例外が発生するか() {
+            var cts = new CancellationTokenSource();
             var directoryName = Path.Combine(TestDataDir, "hogeDir");
             Assert.That(() =>
-                        PreCompile.Preprocess(TestDataInfo with { ProjectDir = directoryName }, "contain_comment.rc"),
+                        PreCompile.Preprocess(TestDataInfo with { ProjectDir = directoryName }, "contain_comment.rc", cts.Token),
                         Throws.Exception.TypeOf<DirectoryNotFoundException>()
                         .And.Message.EqualTo(directoryName));
         }
@@ -93,23 +96,26 @@ namespace MFCFriendlyDriverGenerator {
 
         [Test]
         public void 本文のDefineを展開せずにファイルをプリコンパイルできるか() {
-            Generator.PrecompiledString(TestDataInfo, "DialogTest.rc")
+            var cts = new CancellationTokenSource();
+            Generator.PrecompiledString(TestDataInfo, "DialogTest.rc", cts.Token)
                 .Is(ToOSNewLine(DialogTestRCCode));
         }
 
         [Test]
         public void Defineを展開せずにファイルをプリコンパイルできるか_相対パスでインクルードした場合() {
-            Generator.PrecompiledString(new(TestDataDir, Array.Empty<string>(), Array.Empty<string>()), "sub_dir\\include_DialogTest.rc")
+            var cts = new CancellationTokenSource();
+            Generator.PrecompiledString(new(TestDataDir, Array.Empty<string>(), Array.Empty<string>()), "sub_dir\\include_DialogTest.rc", cts.Token)
                 .Is(ToOSNewLine("including DialogTest.rc\n" +
                     DialogTestRCCode));
         }
 
         [Test]
         public void MFCのRCファイルをパースできるか() {
+            var cts = new CancellationTokenSource();
             var env = Environment.GetEnvironmentVariable("INCLUDE");
             var workingDir = Path.Combine(Path.GetFullPath(Path.Combine(ProjectRoot, "..")), "Target", "NativeControls");
             var rcfile = "NativeControls.rc";
-            var rcBody = Generator.PrecompiledString(new(workingDir, Array.Empty<string>(), Array.Empty<string>()), rcfile);
+            var rcBody = Generator.PrecompiledString(new(workingDir, Array.Empty<string>(), Array.Empty<string>()), rcfile, cts.Token);
             var resources = ResourceParser.Resources.End().Parse(rcBody).ToArray();
             Assert.That(resources, Is.Not.Empty);
         }

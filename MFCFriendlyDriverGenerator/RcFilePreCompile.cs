@@ -1,4 +1,5 @@
 using System.Collections.Generic.Immutable;
+using System.Threading;
 
 namespace MFCFriendlyDriverGenerator {
 
@@ -13,6 +14,6 @@ namespace MFCFriendlyDriverGenerator {
         ///  戻り値のコードにディレクティブが入っていてもよい。
         /// </summary>
         /// <param name="info"> コマンドを実行してプリプロセスするための情報 </param>
-        PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath);
+        PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath, CancellationToken token);
     }
 }

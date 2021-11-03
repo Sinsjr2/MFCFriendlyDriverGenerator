@@ -3,6 +3,7 @@ using System.Collections.Generic.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MFCFriendlyDriverGenerator {
 
@@ -22,12 +23,13 @@ namespace MFCFriendlyDriverGenerator {
             }
         }
 
-        public PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath) {
+        public PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath, CancellationToken token) {
             var result = "gcc".Run(
                 "-finput-charset=UTF-16 -H -P -nostdinc " +
                 string.Join(" ", info.Defines.Select(def => "-D" + def)) + " " +
                 string.Join(" ", info.IncludePaths.Select(path => $"-I \"{path}\"")) + " " +
-                " -E -x c-header -C " + rcFilePath, info.ProjectDir);
+                " -E -x c-header -C " + rcFilePath, info.ProjectDir,
+                token: token);
 
             return new PreprocessResult(
                 GetHeaderFilePaths(result.StandardError)

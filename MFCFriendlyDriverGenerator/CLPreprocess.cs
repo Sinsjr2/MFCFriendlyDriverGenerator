@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.Generic.Immutable;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace MFCFriendlyDriverGenerator {
 
@@ -25,7 +26,7 @@ namespace MFCFriendlyDriverGenerator {
         ///  rcファイルのプリプロセスを行います。
         ///  インクルードしているファイルには自身のファイルは含みません。
         /// </summary>
-        public PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath) {
+        public PreprocessResult Preprocess(PreprocessProcInfo info, string rcFilePath, CancellationToken token) {
             var defines = info.Defines.Concat(new[] { "RC_INVOKED", "WINAPI_PARTITION_DESKTOP=0" });
             var result = "cl".Run(
                 string.Join(" ", info.IncludePaths.Select(path => $"/I\"{path}\"")) + " " +
@@ -34,7 +35,8 @@ namespace MFCFriendlyDriverGenerator {
                 // コメントが文字化けを防止する対策
                 // コメント以外はshift_jisであるため、日本語が文字化けするが
                 // コメントに重要な情報が詰まっているので、よしとする。
-                outputEncoding : System.Text.Encoding.UTF8);
+                outputEncoding : System.Text.Encoding.UTF8,
+                token: token);
 
             return new PreprocessResult(
                 GetHeaderFilePaths(result.StandardError).ToEqList(),
