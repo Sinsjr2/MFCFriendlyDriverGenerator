@@ -38,20 +38,21 @@ namespace MFCFriendlyDriverGenerator {
             {ControlKind.COMBOBOX,        ("Codeer.Friendly.Windows.NativeStandardControls.NativeComboBox", true)},
         };
 
-        readonly IReadOnlyDictionary<string, string> ControlNameToDriverType = new Dictionary<string, string>() {
-            {"Button"            , "Codeer.Friendly.Windows.NativeStandardControls.NativeButton"},
-            {"ComboBoxEx32"      , "Codeer.Friendly.Windows.NativeStandardControls.NativeComboBox"},
-            {"SysDateTimePick32" , "Codeer.Friendly.Windows.NativeStandardControls.NativeDateTimePicker"},
-            {"SysIPAddress32"    , "Codeer.Friendly.Windows.NativeStandardControls.NativeIPAddress"},
-            {"SysTabControl32"   , "Codeer.Friendly.Windows.NativeStandardControls.NativeTab"},
-            {"msctls_updown32"   , "Codeer.Friendly.Windows.NativeStandardControls.NativeSpinButton"},
-            {"msctls_trackbar32" , "Codeer.Friendly.Windows.NativeStandardControls.NativeSlider"},
-            {"SysMonthCal32"     , "Codeer.Friendly.Windows.NativeStandardControls.NativeMonthCalendar"},
-            {"msctls_progress32" , "Codeer.Friendly.Windows.NativeStandardControls.NativeProgress"},
-            {"RichEdit20W"       , "Codeer.Friendly.Windows.NativeStandardControls.NativeEdit"},
-            {"RichEdit20A"       , "Codeer.Friendly.Windows.NativeStandardControls.NativeEdit"},
-            {"SysListView32"     , "Codeer.Friendly.Windows.NativeStandardControls.NativeListControl"},
-            {"SysTreeView32"     , "Codeer.Friendly.Windows.NativeStandardControls.NativeTree"}
+        readonly IReadOnlyDictionary<string, (string type, bool usesConstructor)> ControlNameToDriverType = new Dictionary<string, (string type, bool usesConstructor)>() {
+            {"Button"            , ("Codeer.Friendly.Windows.NativeStandardControls.NativeButton"         , true)},
+            {"ComboBoxEx32"      , ("Codeer.Friendly.Windows.NativeStandardControls.NativeComboBox"       , true)},
+            {"SysDateTimePick32" , ("Codeer.Friendly.Windows.NativeStandardControls.NativeDateTimePicker" , true)},
+            {"SysIPAddress32"    , ("Codeer.Friendly.Windows.NativeStandardControls.NativeIPAddress"      , true)},
+            {"SysTabControl32"   , ("Codeer.Friendly.Windows.NativeStandardControls.NativeTab"            , true)},
+            {"msctls_updown32"   , ("Codeer.Friendly.Windows.NativeStandardControls.NativeSpinButton"     , true)},
+            {"msctls_trackbar32" , ("Codeer.Friendly.Windows.NativeStandardControls.NativeSlider"         , true)},
+            {"SysMonthCal32"     , ("Codeer.Friendly.Windows.NativeStandardControls.NativeMonthCalendar"  , true)},
+            {"msctls_progress32" , ("Codeer.Friendly.Windows.NativeStandardControls.NativeProgress"       , true)},
+            {"RichEdit20W"       , ("Codeer.Friendly.Windows.NativeStandardControls.NativeEdit"           , true)},
+            {"RichEdit20A"       , ("Codeer.Friendly.Windows.NativeStandardControls.NativeEdit"           , true)},
+            {"SysListView32"     , ("Codeer.Friendly.Windows.NativeStandardControls.NativeListControl"    , true)},
+            {"SysTreeView32"     , ("Codeer.Friendly.Windows.NativeStandardControls.NativeTree"           , true)},
+            {"Static"            , ("Codeer.Friendly.Windows.Grasp.WindowControl"                         , false)},
         };
 
         public IEnumerable<Dialog> ToDialogs(IEnumerable<DIALOG> dialogs, IReadOnlyDictionary<string, int> resourceNameToDialogID) {
@@ -63,7 +64,7 @@ namespace MFCFriendlyDriverGenerator {
                                    let maybeResID = resourceNameToDialogID.TryGetValue(control.ID, out var id) ? id : default(int?)
                                    where maybeResID.HasValue
                                    let maybeDriverType = control switch {
-                                      Control ctrl => ControlNameToDriverType.TryGetValue(ctrl.ControlName, out var ctrlType) ? (ctrlType, true) : null,
+                                      Control ctrl => ControlNameToDriverType.TryGetValue(ctrl.ControlName, out var ctrlType) ? ctrlType: null,
                                       ControlID ctrlID => ControlKindToDriverType.TryGetValue(ctrlID.Kind, out var ctrlType) ? ctrlType : null,
                                       _ => nullValue
                                    }
