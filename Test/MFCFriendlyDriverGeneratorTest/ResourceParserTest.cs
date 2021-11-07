@@ -92,6 +92,7 @@ namespace MFCFriendlyDriverGenerator {
                 Row("  CONTROL  \".\",IDC_BTN,\n \"Button\",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,129,234,10", ("Button", "IDC_BTN")),
                 Row("CONTROL \"\",IDC_LIST,\"SysListView32\",LVS_REPORT | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,7,7,420,113", ("SysListView32", "IDC_LIST")),
                 Row("\r\nCONTROL \"\" , IDC_LIST , \"SysListView32\" \r\n,LVS_REPORT\r\n | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,7,7,\r\n420,113\r\n", ("SysListView32", "IDC_LIST")),
+                Row("CONTROL IDB_HOGE, IDC_FOO, \"Static\", SS_BITMAP,70, 160, 100, 75", ("Static", "IDC_FOO")),
             };
         }
         [Test]

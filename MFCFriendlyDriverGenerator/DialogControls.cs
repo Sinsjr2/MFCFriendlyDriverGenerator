@@ -53,7 +53,7 @@ namespace MFCFriendlyDriverGenerator {
 
         static readonly Parser<IControlID> CONTROL =
             from _ in Parse.String("CONTROL").Elem()
-            from text in ExpParser.StringLiteral
+            from text in ExpParser.StringLiteral.Or(ExpParser.Identifier)
             from id in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Identifier)
             from @class in CommonSyntax.CommaSeparator.Then(_ => ExpParser.StringLiteral)
             from style in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
