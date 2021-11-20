@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using NativeControls.Deiver;
+using NativeControls.Driver;
 
 namespace DriverGenerateTest
 {
