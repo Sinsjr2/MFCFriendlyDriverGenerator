@@ -9,8 +9,6 @@
 #include "NativeControls.h"
 #include "MainFrm.h"
 
-#include "ChildFrm.h"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -106,9 +104,6 @@ int CNativeControlsApp::ExitInstance()
 void CNativeControlsApp::OnFileNew()
 {
 	CMainFrame* pFrame = STATIC_DOWNCAST(CMainFrame, m_pMainWnd);
-	// 新しい MDI 子ウィンドウを作成します
-	pFrame->CreateNewChild(
-		RUNTIME_CLASS(CChildFrame), IDR_NativeControlsTYPE, m_hMDIMenu, m_hMDIAccel);
 }
 
 // アプリケーションのバージョン情報に使われる CAboutDlg ダイアログ
