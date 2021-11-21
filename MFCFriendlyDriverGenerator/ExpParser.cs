@@ -83,14 +83,20 @@ namespace MFCFriendlyDriverGenerator {
 
         static readonly Parser<IExp> ArithmeticExpression =
             BinaryExp(Parse.Chars("+-").Select(c => c.ToString()), BinaryExp(Parse.Chars("*/").Select(op => op.ToString()),
-                                                                             (from op in Parse.Regex("NOT|!|-|~").Elem()
+                                                                             (from op in Parse.String("NOT").Or(Parse.String("!")).Or(Parse.String("-")).Or(Parse.String("~")).Text().Elem()
                                                                               from exp in Parse.Ref(() => UnsignedFactor)
                                                                               select new UnaryOperator(op, exp)
                                                                              )
                                                                              .Or(Parse.Ref(() => UnsignedFactor))));
 
         static readonly Parser<IExp> LogicalFactor =
-            BinaryExp(Parse.Regex("==|!=|<|>|<=|>="), ArithmeticExpression);
+            BinaryExp(
+                Parse.String("==")
+                .Or(Parse.String("!="))
+                .Or(Parse.String("<"))
+                .Or(Parse.String(">"))
+                .Or(Parse.String("<="))
+                .Or(Parse.String(">=")), ArithmeticExpression);
 
         static readonly Parser<IExp> BitExp =
             BinaryExp(Parse.String("|"), BinaryExp(Parse.String("&"), LogicalFactor));
