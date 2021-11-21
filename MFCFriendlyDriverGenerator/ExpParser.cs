@@ -28,7 +28,9 @@ namespace MFCFriendlyDriverGenerator {
             Pair(Parse.WhiteSpace.XMany().Then(_ => Parse.Char('"')), Parse.Char('"').Then(_ => Parse.WhiteSpace.XMany()),
                  StringLiteralBody)
             .Elem();
-        public static readonly Parser<string> IdentifirNoSpace = Parse.Regex("[a-zA-Z_][a-zA-Z_0-9]*", "identifier");
+        public static readonly Parser<string> IdentifirNoSpace =
+            Parse.Identifier(Parse.Letter.Or(Parse.Char('_')), Parse.LetterOrDigit.Or(Parse.Char('_')))
+            .Named("identifier");
         public static readonly Parser<string> Identifier = IdentifirNoSpace.Elem();
 
         public static readonly Parser<int> HexLiteral =
