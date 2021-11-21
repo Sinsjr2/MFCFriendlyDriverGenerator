@@ -8,6 +8,7 @@ namespace MFCFriendlyDriverGenerator {
     public interface IResource { }
 
     public enum FileResourceKind {
+        AVI,
         BITMAP,
         CURSOR,
         FONT,
@@ -223,6 +224,7 @@ namespace MFCFriendlyDriverGenerator {
             DIALOGEX
             .Or(DIALOG)
             .Or(DLGINIT)
+            .Or(FileResource(FileResourceKind.AVI))
             .Or(FileResource(FileResourceKind.BITMAP))
             .Or(FileResource(FileResourceKind.CURSOR))
             .Or(FileResource(FileResourceKind.FONT))

@@ -15,6 +15,7 @@ namespace MFCFriendlyDriverGenerator {
         [TestCase(FileResourceKind.BITMAP, "IDB_FOO", @"..\hoge.bmp", "IDB_FOO        BITMAP                    \"..\\\\hoge.bmp\"\r\n")]
         [TestCase(FileResourceKind.CURSOR, "IDC_CUR", @"..\Resources\hoge.cur", "IDC_CUR              CURSOR                  \"..\\\\Resources\\\\hoge.cur\"\r\n")]
         [TestCase(FileResourceKind.CONFIG, "IDR_INI", @"Regex.ini", "IDR_INI CONFIG  \"Regex.ini\"")]
+        [TestCase(FileResourceKind.AVI, "IDR_D", "d.avi", "IDR_D            AVI                     \"d.avi\"")]
         public void FileResourceTest(FileResourceKind expectedKind, string expectedID, string expectedFilename, string code) {
             ResourceParser.Resources.End().Parse(code)
                 .Is(new[] { new FileResource(expectedKind, expectedID, expectedFilename) });
