@@ -13,7 +13,7 @@
     <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
     <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
     <DevelopmentDependency>true</DevelopmentDependency>
-    <Version>0.8.23</Version>
+    <Version>0.1.0</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Sinsjr2</Authors>
   </PropertyGroup>
