@@ -227,19 +227,19 @@ namespace MFCFriendlyDriverGenerator {
             select new AFXDialogLayout(id, values.ToEqList());
 
         public static readonly Parser<IEnumerable<IResource>> Resources =
-            DIALOGEX
-            .Or(DIALOG)
-            .Or(DLGINIT)
-            .Or(FileResources())
-            .Or(ACCELERATORS)
-            .Or(TOOLBAR)
-            .Or(TEXTINCLUDE)
-            .Or(LANGUAGE)
-            .Or(MENU)
-            .Or(VERSIONINFO)
-            .Or(AFX_DIALOG_LAYOUT)
-            .Select(res => new[] { res }.AsEnumerable())
-            .Or(STRINGTABLE)
+            STRINGTABLE
+            .Or(LANGUAGE
+                .Or(DIALOGEX)
+                .Or(TEXTINCLUDE)
+                .Or(DIALOG)
+                .Or(DLGINIT)
+                .Or(FileResources())
+                .Or(ACCELERATORS)
+                .Or(TOOLBAR)
+                .Or(MENU)
+                .Or(VERSIONINFO)
+                .Or(AFX_DIALOG_LAYOUT)
+                .Select(res => new[] { res }.AsEnumerable()))
             .XMany()
             .Elem()
             .Select(xs => xs.SelectMany(x => x));
