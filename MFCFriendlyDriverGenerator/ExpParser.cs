@@ -56,16 +56,7 @@ namespace MFCFriendlyDriverGenerator {
 
         static Parser<IExp> BinaryExp(Parser<string> opParser, Parser<IExp> expParser)
         {
-            return
-                from leftExp in expParser.Elem()
-                from rights in (from op in opParser.Elem()
-                                from rightExp in expParser.Elem()
-                                select (op, rightExp)).Many()
-                let exps = rights.ToArray()
-                select exps.Any()
-                ? exps.Skip(1).Aggregate(new BinOperator(exps[0].op, leftExp, exps[0].rightExp),
-                                 (left, x) => new BinOperator(x.op, left, x.rightExp))
-                : leftExp;
+            return Parse.ChainOperator(opParser.Elem(), expParser.Elem(), (op, left, right) => new BinOperator(op, left, right));
         }
 
         /// <summary>
