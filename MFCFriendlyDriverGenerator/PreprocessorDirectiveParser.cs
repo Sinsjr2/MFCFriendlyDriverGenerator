@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Sprache;
 
@@ -24,11 +25,20 @@ namespace MFCFriendlyDriverGenerator {
         public static readonly Regex TextLineRegex = new(@"^( *[^# ].*$)", RegexOptions.Multiline);
         public static readonly Regex DirectiveRegex = new("^[\t ]*#(\\\\(\r\n|\n|\r)|.)*(\r\n|\n|\r)?", RegexOptions.Multiline);
 
+        /// <summary>
+        /// 改行コードのエスケープパーサー
+        /// 常に空文字列を返します。
+        /// </summary>
+        static readonly Parser<IEnumerable<char>> EscapeLineEnd =
+            from _1 in Parse.String("\\")
+            from _2 in EndOfLine
+            select "";
+            
         static readonly Parser<IPreprocessorDirective> Define =
             Directive("define",
                 from name in Elem(ExpParser.IdentifirNoSpace)
-                from value in Elem(Parse.Regex(@"(\\(\r\n|\n|\r)|[^\n\r])*").XOptional())
-                select new Define(name, Regex.Replace(value.GetOrElse(""), @"\\(\r\n|\n|\r)", "", RegexOptions.Multiline))
+                from value_ in Elem(EscapeLineEnd.Or(Parse.CharExcept("\r\n").Once()).Many())
+                select new Define(name, new string(value_.SelectMany(xs => xs).ToArray()))
             );
 
         static readonly Parser<IPreprocessorDirective> Include =
