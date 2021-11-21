@@ -24,10 +24,10 @@ namespace MFCFriendlyDriverGenerator {
     public static class ExpParser {
         static readonly Parser<string> StringLiteralBody =
             Parse.String("\\").Concat(Parse.AnyChar.Once())
-            .Or(Parse.String("\"\""))
+            .Or(Parse.String("\"\"").Return("\""))
             .Or(Parse.CharExcept('"').Once())
             .Many()
-            .Select(chars => Regex.Unescape(new string(chars.SelectMany(xs => xs).ToArray())).Replace("\"\"", "\""));
+            .Select(chars => Regex.Unescape(new string(chars.SelectMany(xs => xs).ToArray())));
         public static readonly Parser<string> StringLiteral =
             StringLiteralBody.Contained(Parse.Char('"'), Parse.Char('"'))
             .Named("string literal")
