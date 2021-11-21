@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Sprache;
 using Microsoft.CodeAnalysis;
-using System.Xml.Serialization;
 using MFCFriendlyDriverGenerator.Setting;
 using System.Collections.Generic.Immutable;
 using System.CodeDom.Compiler;
@@ -177,24 +176,32 @@ namespace MFCFriendlyDriverGenerator {
                 context.ReportDiagnostic(Diagnostic.Create(ToManySettingFile, Location.None, string.Join("\n", xmlFiles)));
                 return;
             }
-            foreach (var xmlFile in xmlFiles) {
-                try {
+            try {
+                // デバッグを設定ファイルから有効にする
+                var settingText = xmlFiles.FirstOrDefault()?.GetText(context.CancellationToken)?.ToString();
+                if (settingText is not null &&
+                    XmlSerialize.Deserialize<FriendlyDriverGenerator>(settingText).AttachesDebugger &&
+                    !System.Diagnostics.Debugger.IsAttached) {
+                    System.Diagnostics.Debugger.Launch();
+                }
+
+                foreach (var xmlFile in xmlFiles) {
                     ProcessSettingFile(xmlFile, context);
                 }
-                // 中断した例外を出力しても邪魔なのでフィルタリングする
-                catch (OperationCanceledException) {}
-                catch (AggregateException ae) {
-                    var exs = ae.InnerExceptions
-                        .Where(e => e is not OperationCanceledException)
-                        .ToArray();
-                    if (exs.Any()) {
-                        var message = string.Join("\n", exs.AsEnumerable());
-                        Diagnostic.Create(ExceptionMessage, Location.None, message);
-                    }
+            }
+            // 中断した例外を出力しても邪魔なのでフィルタリングする
+            catch (OperationCanceledException) { }
+            catch (AggregateException ae) {
+                var exs = ae.InnerExceptions
+                    .Where(e => e is not OperationCanceledException)
+                    .ToArray();
+                if (exs.Any()) {
+                    var message = string.Join("\n", exs.AsEnumerable());
+                    context.ReportDiagnostic(Diagnostic.Create(ExceptionMessage, Location.None, message));
                 }
-                catch (Exception ex) {
-                    Diagnostic.Create(ExceptionMessage, Location.None, ex.ToString());
-                }
+            }
+            catch (Exception ex) {
+                context.ReportDiagnostic(Diagnostic.Create(ExceptionMessage, Location.None, ex.ToString()));
             }
         }
 
@@ -207,9 +214,7 @@ namespace MFCFriendlyDriverGenerator {
 
         void ProcessSettingFile(AdditionalText xmlFile, GeneratorExecutionContext context) {
             var text = xmlFile.GetText(context.CancellationToken)!.ToString();
-            var serializer = new XmlSerializer(typeof(FriendlyDriverGenerator));
-            var reader = new StringReader(text);
-            var setting = (FriendlyDriverGenerator)serializer.Deserialize(reader);
+            var setting = XmlSerialize.Deserialize<FriendlyDriverGenerator>(text);
 
             var table = new MFCFriendlyDriverTable();
 

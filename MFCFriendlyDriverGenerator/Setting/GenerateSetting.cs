@@ -9,6 +9,11 @@ namespace MFCFriendlyDriverGenerator.Setting {
         [property:XmlIgnore]
         EqList<MFCFriendly> MFCFriendly
     ) {
+        /// <summary>
+        /// ソースコードジェネレータのデバッグ用にデバッガをアタッチするかどうかの設定
+        /// </summary>
+        [XmlAttribute("attachesDebugger")]
+        public bool AttachesDebugger { get; init; } = false;
 
         [XmlElement("MFCFriendly")]
         public MFCFriendly[] MFCFriendlyForXml {
