@@ -39,8 +39,12 @@ namespace MFCFriendlyDriverGenerator {
         public static readonly Parser<string> Identifier = IdentifirNoSpace.Elem();
 
         public static readonly Parser<int> HexLiteral =
-            Parse.Regex("0x[0-9A-Fa-f]+").Elem()
-            .Select(hex => int.Parse(hex.Substring(2), NumberStyles.HexNumber));
+            Parse.IgnoreCase("0x")
+            .Then(_ => Parse.Char(c => c is >= '0' and <= '9' or >= 'a' and <= 'f' or >= 'A' and <= 'F', "").AtLeastOnce())
+            .Elem()
+            .Text()
+            .Select(hex => int.Parse(hex, NumberStyles.HexNumber))
+            .Named("hex literal");
 
         public static readonly Parser<int> IntLiteral =
             from v in HexLiteral.Or(Parse.Decimal.Select(int.Parse))
