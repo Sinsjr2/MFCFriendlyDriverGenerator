@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Generic.Immutable;
 using System.Linq;
@@ -75,13 +76,19 @@ namespace MFCFriendlyDriverGenerator {
                 select new DIALOG(nameID, controls.ToEqList(), menuID);
         }
 
-        static Parser<IResource> FileResource(FileResourceKind kind)
+        static Parser<IResource> FileResources()
         {
-            var kindToken = Parse.String(kind.ToString()).Elem();
+           var kinds = Enum.GetNames(typeof(FileResourceKind))
+                .Aggregate(Parse.Return(Enumerable.Empty<char>()),
+                (result, kind) => result.Or(Parse.String(kind)))
+                .Elem()
+                .Text();
             return
-                from nameID in ExpParser.Identifier.Then(id => kindToken.Return(id))
+                from nameID in ExpParser.Identifier
+                from kindStr in kinds
                 from filename in ExpParser.StringLiteral
-                select new FileResource(kind, nameID, filename);
+                // ÉpÅ[ÉXÇ…é∏îsÇ∑ÇÈÇ±Ç∆ÇÕÇ»Ç¢
+                select new FileResource(Enum.TryParse(kindStr, out FileResourceKind kind) ? kind : kind, nameID, filename);
         }
 
         static readonly Parser<IResource> ACCELERATORS =
@@ -223,14 +230,7 @@ namespace MFCFriendlyDriverGenerator {
             DIALOGEX
             .Or(DIALOG)
             .Or(DLGINIT)
-            .Or(FileResource(FileResourceKind.AVI))
-            .Or(FileResource(FileResourceKind.BITMAP))
-            .Or(FileResource(FileResourceKind.CURSOR))
-            .Or(FileResource(FileResourceKind.FONT))
-            .Or(FileResource(FileResourceKind.HTML))
-            .Or(FileResource(FileResourceKind.ICON))
-            .Or(FileResource(FileResourceKind.MESSAGETABLE))
-            .Or(FileResource(FileResourceKind.CONFIG))
+            .Or(FileResources())
             .Or(ACCELERATORS)
             .Or(TOOLBAR)
             .Or(TEXTINCLUDE)
