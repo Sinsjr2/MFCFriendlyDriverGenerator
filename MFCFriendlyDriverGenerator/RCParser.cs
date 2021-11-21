@@ -196,7 +196,6 @@ namespace MFCFriendlyDriverGenerator {
             select "";
 
         static readonly Parser<IResource> VERSIONINFO =
-            // from id in ExpParser.Exp
             from id in ExpParser.Identifier
             let integers = ExpParser.Exp.DelimitedBy(CommonSyntax.CommaSeparator)
             .Select(_ => default(IExp))
