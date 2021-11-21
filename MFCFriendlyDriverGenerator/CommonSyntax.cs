@@ -5,6 +5,21 @@ namespace MFCFriendlyDriverGenerator {
     public static class CommonSyntax {
         public static readonly CommentParser Comment = new("//", "/*", "*/", "\n\r");
 
+        /// <summary>
+        /// 空白文字にマッチします。
+        /// 常に空文字列を返します。
+        /// </summary>
+        static readonly Parser<string> IgnoreWhiteSpace =
+            Parse.WhiteSpace.Return("");
+
+        /// <summary>
+        /// コメントアウトと不要な食う文字列ににマッチします。
+        /// 常に空文字列を返します。
+        /// </summary>
+        static readonly Parser<string> UnnecessaryString =
+            IgnoreWhiteSpace.Or(Comment.AnyComment).Many()
+            .Return("");
+
         public static Parser<T> BeginEnd<T>(this Parser<T> bodyParser) {
             return ExpParser.Pair(Parse.String("BEGIN").Elem(), Parse.String("END").Elem(), bodyParser);
         }
@@ -16,14 +31,7 @@ namespace MFCFriendlyDriverGenerator {
         ///  指定したパーサーの前後に空白やコメントが入ってもいいようにします。
         /// </summary>
         public static Parser<T> Elem<T>(this Parser<T> parser) {
-            var space = Parse.Chars("\r\n\t ").Select(_ => "");
-            var comments = Comment.AnyComment;
-            var unnecessaryString = space.Or(comments).Many();
-            return
-                from _1 in unnecessaryString
-                from x in parser
-                from _2 in unnecessaryString
-                select x;
+            return parser.Contained(UnnecessaryString, UnnecessaryString);
         }
 
         /// <summary>
