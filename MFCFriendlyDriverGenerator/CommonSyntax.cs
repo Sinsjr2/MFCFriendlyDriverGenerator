@@ -21,7 +21,7 @@ namespace MFCFriendlyDriverGenerator {
             .Return("");
 
         public static Parser<T> BeginEnd<T>(this Parser<T> bodyParser) {
-            return ExpParser.Pair(Parse.String("BEGIN").Elem(), Parse.String("END").Elem(), bodyParser);
+            return bodyParser.Contained(Parse.String("BEGIN").Elem(), Parse.String("END").Elem());
         }
 
         public static readonly Parser<char> CommaSeparator =

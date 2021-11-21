@@ -29,8 +29,7 @@ namespace MFCFriendlyDriverGenerator {
             .Many()
             .Select(chars => Regex.Unescape(new string(chars.SelectMany(xs => xs).ToArray())).Replace("\"\"", "\""));
         public static readonly Parser<string> StringLiteral =
-            Pair(Parse.WhiteSpace.XMany().Then(_ => Parse.Char('"')), Parse.Char('"').Then(_ => Parse.WhiteSpace.XMany()),
-                 StringLiteralBody)
+            StringLiteralBody.Contained(Parse.Char('"'), Parse.Char('"'))
             .Named("string literal")
             .Elem();
         public static readonly Parser<string> IdentifirNoSpace =
@@ -69,14 +68,6 @@ namespace MFCFriendlyDriverGenerator {
                 : leftExp;
         }
 
-        public static Parser<T3> Pair<T1, T2, T3>(Parser<T1> beginParser, Parser<T2> endParser, Parser<T3> bodyParser) {
-            return
-                from _1 in beginParser
-                from body in bodyParser
-                from _2 in endParser
-                select body;
-        }
-
         /// <summary>
         /// 開始文字と終了文字も一緒に返します。
         /// </summary>
@@ -91,7 +82,7 @@ namespace MFCFriendlyDriverGenerator {
 
 
         public static Parser<T> Paren<T>(this Parser<T> bodyParser) {
-            return Pair(Parse.Char('('), Parse.Char(')'), bodyParser);
+            return bodyParser.Contained(Parse.Char('('), Parse.Char(')'));
         }
 
         static readonly Parser<IExp> ArithmeticExpression =
