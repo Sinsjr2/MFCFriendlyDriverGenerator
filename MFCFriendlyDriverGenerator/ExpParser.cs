@@ -77,6 +77,19 @@ namespace MFCFriendlyDriverGenerator {
                 select body;
         }
 
+        /// <summary>
+        /// 開始文字と終了文字も一緒に返します。
+        /// </summary>
+        public static Parser<IEnumerable<T>> PairWithValue<T>(
+            Parser<IEnumerable<T>> beginParser,
+            Parser<IEnumerable<T>> endParser,
+            Parser<IEnumerable<T>> bodyParser) =>
+            from begin in beginParser
+            from body in bodyParser
+            from end in endParser
+            select begin.Concat(body).Concat(end);
+
+
         public static Parser<T> Paren<T>(this Parser<T> bodyParser) {
             return Pair(Parse.Char('('), Parse.Char(')'), bodyParser);
         }
