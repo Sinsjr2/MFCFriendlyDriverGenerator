@@ -93,11 +93,5 @@ namespace MFCFriendlyDriverGenerator {
             var result = parser.End().Parse(data.Code).ToArray();
             result.Is(data.Expected);
         }
-
-        [Test]
-        public void サンプル() {
-            var str = File.ReadAllText(@"C:\Users\making-win\Desktop\MFCFriendlyDriverGenerator\Test\DriverGenerateTest\Generated\join.txt");
-            var result = PreprocessorDirectiveParser.PreprocessorDirective.End().Parse(str);
-        }
     }
 }
