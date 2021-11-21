@@ -36,6 +36,7 @@ namespace MFCFriendlyDriverGenerator {
             return new PreprocessorDirectiveTestData[] {
                 new("  #include <stdio>\r\n", new[] { new Include("<stdio>") }),
                 new("#include \"hoge.h\"\r\n", new[] { new Include("\"hoge.h\"") }),
+                new("  #include \"pc\\\r\nh.h\"", new[] { new Include("\"pch.h\"") }),
                 new("  #pragma pack(1)\r\n", new[] { new OtherDirective("pragma pack(1)") }),
                 new("  #pragma pack(1) //this is comment\r\nABCDE", new IPreprocessorDirective[] { new OtherDirective("pragma pack(1) "), new TextBlock("ABCDE") }),
                 new("#define IDC_BTN 605\r\n", new[] { new Define("IDC_BTN", "605") }),

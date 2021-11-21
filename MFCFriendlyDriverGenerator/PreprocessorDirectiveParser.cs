@@ -41,9 +41,15 @@ namespace MFCFriendlyDriverGenerator {
                 select new Define(name, new string(value_.SelectMany(xs => xs).ToArray()))
             );
 
+        static readonly Parser<string> DefineValue =
+            Elem(ExpParser.PairWithValue(Parse.String("\""), Parse.String("\""),
+                EscapeLineEnd.Or(Parse.CharExcept("\r\n\"").Once()).Many().Select(x => x.SelectMany(xs => xs)))
+                .Or(ExpParser.PairWithValue(Parse.String("<"), Parse.String(">"), Parse.CharExcept("\r\n>").Many().Text())))
+            .Select(v => new string(v.ToArray()));
+
         static readonly Parser<IPreprocessorDirective> Include =
             Directive("include",
-                from path in Elem(Parse.Regex("\".*\"|<.*>"))
+                from path in DefineValue
                 select new Include(path));
 
         static readonly Parser<IPreprocessorDirective> OtherDirective =
