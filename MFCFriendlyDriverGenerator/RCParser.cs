@@ -45,10 +45,10 @@ namespace MFCFriendlyDriverGenerator {
         static readonly Parser<IResource> DIALOG   = DialogBase("DIALOG", 3, 3);
 
         static readonly Parser<string> DialogOptional =
-            Parse.String("CAPTION").Elem().Then(_ => ExpParser.StringLiteral.Select(_ => "")).Or(
-                Parse.String("STYLE").Elem().Then(_ => ExpParser.Exp.Select(_ => ""))
+            Parse.String("CAPTION").Elem().Then(_ => ExpParser.StringLiteral.Return("")).Or(
+                Parse.String("STYLE").Elem().Then(_ => ExpParser.Exp.Return(""))
             )
-            .Or(Parse.String("EXSTYLE").Elem().Then(_ => ExpParser.Exp.Select(_ => "")))
+            .Or(Parse.String("EXSTYLE").Elem().Then(_ => ExpParser.Exp.Return("")))
             .Or(Parse.String("MENU").Elem().Then(_ => ExpParser.Identifier))
             .Or(
                 from __1 in Parse.String("FONT").Elem()
@@ -60,7 +60,7 @@ namespace MFCFriendlyDriverGenerator {
                 from _1 in Parse.String("CLASS").Elem()
                 from @class in CommonSyntax.CommaSeparator.Then(_ => ExpParser.Exp)
                 select ""
-            ).Or(Parse.Ref(() => LANGUAGE).Select(_ => ""))
+            ).Or(Parse.Ref(() => LANGUAGE).Return(""))
             .Many()
             .Select(xs => xs.Where(str => str != "").SingleOrDefault());
 
